@@ -587,8 +587,17 @@ class Import3MF(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
                     continue
 
                 object_id = object_node.attrib['id']
-                parent_component_id = str(int(object_id) + 1)
-                base_color = self.bambu_object_base_color[parent_component_id]
+
+                # Ridiculously hacky...
+                for i in range(1, 10):
+                    parent_component_id = str(int(object_id) + i)
+                    try:
+                        base_color = self.bambu_object_base_color[parent_component_id]
+                    except KeyError as e:
+                        continue
+                    if base_color is not None:
+                        break
+
                 if base_color is None:
                     base_color = '4'
                 pid = attrib.get("paint_color", base_color)
